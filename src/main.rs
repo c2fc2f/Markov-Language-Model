@@ -8,6 +8,7 @@ use std::{
     process::ExitCode,
 };
 
+use ahash::RandomState;
 use clap::Parser;
 use clap_stdin::FileOrStdin;
 use hashbrown::HashMap;
@@ -283,14 +284,18 @@ fn markov_table(
     keep_eol: bool,
     limit: usize,
     reader: &mut impl BufRead,
-) -> std::io::Result<(IndexSet<Word>, HashMap<Box<[u32]>, SmallVec<[u32; 2]>>)>
-{
+) -> std::io::Result<(
+    IndexSet<Word, RandomState>,
+    HashMap<Box<[u32]>, SmallVec<[u32; 2]>, RandomState>,
+)> {
     use hashbrown::hash_map::RawEntryMut;
 
     let order: usize = order.get();
     let mut window: Vec<u32> = Vec::with_capacity(order);
-    let mut result: HashMap<Box<[u32]>, SmallVec<[u32; 2]>> = HashMap::new();
-    let mut words: IndexSet<Word> = IndexSet::new();
+    let mut result: HashMap<Box<[u32]>, SmallVec<[u32; 2]>, RandomState> =
+        HashMap::with_hasher(RandomState::new());
+    let mut words: IndexSet<Word, RandomState> =
+        IndexSet::with_hasher(RandomState::new());
     let mut word_buf: Word = Vec::new();
 
     loop {
@@ -362,8 +367,8 @@ fn markov_table(
 /// when `table` was produced by [`markov_table`] (every key is inserted
 /// alongside at least one successor).
 fn markov_generate(
-    words: &IndexSet<Word>,
-    table: &HashMap<Box<[u32]>, SmallVec<[u32; 2]>>,
+    words: &IndexSet<Word, RandomState>,
+    table: &HashMap<Box<[u32]>, SmallVec<[u32; 2]>, RandomState>,
     limit: usize,
     order: NonZero<usize>,
     width: usize,

@@ -38,3 +38,4 @@ hashbrown = "0.17"
 indexmap = "2"
 rand = "0.10"
 smallvec = { version = "1", features = ["union"] }
+ahash = "0.8"
