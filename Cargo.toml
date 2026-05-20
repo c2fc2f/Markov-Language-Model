@@ -32,3 +32,9 @@ missing_errors_doc = "warn"
 missing_panics_doc = "warn"
 
 [dependencies]
+clap = { version = "4", features = ["derive"] }
+clap-stdin = "0.8"
+hashbrown = "0.17"
+indexmap = "2"
+rand = "0.10"
+smallvec = { version = "1", features = ["union"] }
